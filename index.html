@@ -1,0 +1,56 @@
+<html>
+<head>
+	<script src="paint.js"></script>
+	<title>Circles</title>
+</head>
+<body>
+	<canvas id="canv1" width=300 height=300></canvas>
+	<canvas id="canv2" width=300 height=300></canvas>
+	<script>
+		var canv1 = document.getElementById("canv1");
+		var canv2 = document.getElementById("canv2");
+		var ctx = canv1.getContext("2d");
+		var img = new Image();
+		img.onload = function() {
+			ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, 300, 300);
+			var data = ctx.getImageData(0,0,300,300).data;
+			var top = topN(data, 3).reverse();
+
+			ctx = document.getElementById("canv2").getContext("2d");
+			var i = 0;
+			var start, r, g, b, a, x, y;
+
+			var parsedData = [];
+			populateParsedData(parsedData, data, top);
+
+			var topCopy = top.slice();
+
+			var intId = setInterval(function() {
+				if(top.length === 0) {
+					clearInterval(intId);
+					return;
+				}
+
+				paintNextColor(parsedData, top);
+			}, 200);
+
+			setTimeout(function() {
+				while(true) {
+					if(top.length === 0) {
+						deleteSmallClusters(parsedData, 300);
+						while(topCopy.length) {
+							paintNextColor(parsedData, topCopy);
+						}
+						fillBoundary(parsedData, 300);
+						break;
+					}
+				}
+			}, 600);
+
+		}
+		img.src = "hibiscus.jpg";
+
+
+	</script>
+</body>
+</html>
